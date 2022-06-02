@@ -1,0 +1,315 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pub.workoak.com/schemas/2021-10/wop_service.schema.json#",
+  "title": "WO Service Definition Schema",
+  "description": "WO Service config schema",
+  "type": "object",
+  "$comment": "2010-10 draft 0.1",
+  "properties": {
+    "$schema":{
+      "type":"string"
+    },
+    "$id":{
+      "type":"string"
+    },
+    "name": {
+      "description": "The unique name for the WOP service",
+      "type": "string",
+      "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
+    },
+    "namespace": {
+      "description": "The namespace for the WOP service",
+      "type": "string",
+      "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
+    },
+    "base":{
+      "type":"string"
+    },
+    "gen_options":{
+      "description": "Generation Options",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "option_name": {
+            "description": "A Generation Option Name",
+            "type": "string",
+            "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
+          },
+          "option_value": {
+            "description": "A Generation Option value",
+            "type": "string"
+          }
+        }
+        ,"required": [
+          "option_name","option_value"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "title": {
+      "description": "The title the WOP service",
+      "type": "string"
+    },
+    "description": {
+      "description": "The description the WOP service",
+      "type": "string"
+    },
+    "entities": {
+      "description": "Data Entities",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Name of the entity",
+            "type": "string",
+            "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
+          }
+        }
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "commands": {
+      "description": "Commands",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/commandDef"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "recordsDefs": {
+      "description": "Record definitons Object",
+      "$ref": "#/$defs/recordsDefs"
+    }
+  },
+  "required": [
+    "name","namespace"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "commandDef": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "ID of the command. This will be used in the code generation",
+          "type": "string",
+          "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
+        },
+        "title": {
+          "description": "Name of the command",
+          "type": "string"
+        },
+        "alias": {
+          "type": "string",
+          "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
+        },
+        "state_type": {
+          "description": "The type of the command. Stateless/Stateful",
+          "type": "string",
+          "enum": [
+            "stateless",
+            "stateful",
+            "cluster"
+          ]
+        },
+        "fields": {
+          "type": "object",
+          "description": " fields ",
+          "$ref": "#/$defs/fieldsGroupDef"
+        },
+        "resultFields" :{
+          "type": "object",
+          "description": " results fields ",
+          "$ref": "#/$defs/fieldsGroupDef"
+        }
+      },
+      "additionalProperties": false,
+      "required":["name"]
+    },
+    "payloadDef": {
+      "type": "object",
+      "description": "payload def",
+      "oneOf": [
+        {
+          "properties": {
+            "type": {
+              "type": "string",
+              
+              "enum": [
+                "string",
+                "boolean",
+                "int32",
+                "int64",
+                "float",
+                "double",
+                "bytes",
+                "uint32",
+                "sint32",
+                "timestamp",
+                "duration"
+              ]
+            }
+          },
+          "required":["type"]
+        },
+        {
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "record"
+              ]
+            },
+                  "recordDefName" : {
+                    "type":"string",
+                    "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
+                  }
+            
+          },
+          "required":["type","recordDefName"]
+        },
+        {
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "recRef"
+              ]
+            },
+                  "$ref" : {
+                    "type": "string"
+                  }
+            
+          },
+          "required":["type","recRef"]
+        },
+        {
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "map"
+              ]
+            },
+                  "valueType" : {
+                    "type":"string",
+                    "enum": [
+                      "string",
+                      "boolean",
+                      "int16",
+                      "int32",
+                      "bytes"
+                    ],
+                    "default":"string"
+                  }
+            
+          },
+          "required":["type","valueType"]
+        },{
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "oneOf"
+              ]
+            },
+            "fields": {
+              "type": "object",
+              "description": " oneOf fields defs",
+              "$ref": "#/$defs/fieldsGroupDef"
+            }
+            
+          },
+          "required":["type","fields"]
+        }
+      ]
+    },
+
+    "fieldDef": {
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "required":["fnum"],
+          "properties": {
+            "alias": {
+              "type": "string",
+              "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
+            },
+            "fnum": {
+              "type": "integer"
+            },
+            "repeated": {
+              "type": "boolean",
+              "default": false
+            },
+            "tags": {
+              "description": "Field Tags",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
+                },
+              "minItems": 1,
+              "uniqueItems": true
+            }
+          }
+        },
+        {
+          "type":"object",
+          "$ref":"#/$defs/payloadDef"
+        }
+      ]
+    },
+    "fieldsGroupDef": {
+      "type": "object",
+      "description": " fields group definition",
+      "patternProperties": {
+        "^[A-Za-z][a-zA-Z0-9_]*$": {
+          "type": "object",
+          "$ref": "#/$defs/fieldDef"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "recordDef": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "name of the record definiton",
+          "type": "string",
+          "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
+        },
+        "title": {
+          "description": "Name of the record definiton",
+          "type": "string"
+        },
+        "fields": {
+          "type": "object",
+          "description": " Fields defintions",
+          "$ref": "#/$defs/fieldsGroupDef"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "recordsDefs": {
+      "type": "object",
+      "description": " record definitions definition",
+      "patternProperties": {
+        "^[A-Za-z][a-zA-Z0-9_]*$": {
+          "type": "object",
+          "$ref": "#/$defs/recordDef"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    }
+  }
+}
