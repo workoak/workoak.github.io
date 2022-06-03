@@ -5,29 +5,31 @@
   "description": "WO Service config schema",
   "type": "object",
   "required": [
-    "$schema","$id","name","namespace"
+    "$id",
+    "name",
+    "namespace"
   ],
   "properties": {
-    "$schema":{
-      "type":"string"
+    "$schema": {
+      "type": "string"
     },
-    "$id":{
-      "type":"string"
+    "$id": {
+      "type": "string"
     },
     "name": {
       "description": "The unique name for the WOP service",
       "type": "string",
-      "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
+      "pattern": "^[A-Za-z][a-zA-Z0-9_]*$"
     },
     "namespace": {
       "description": "The namespace for the WOP service",
       "type": "string",
-      "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
+      "pattern": "^[A-Za-z][a-zA-Z0-9_]*$"
     },
-    "base":{
-      "type":"string"
+    "base": {
+      "type": "string"
     },
-    "gen_options":{
+    "gen_options": {
       "description": "Generation Options",
       "type": "array",
       "items": {
@@ -36,15 +38,16 @@
           "option_name": {
             "description": "A Generation Option Name",
             "type": "string",
-            "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
+            "pattern": "^[A-Za-z][a-zA-Z0-9_]*$"
           },
           "option_value": {
             "description": "A Generation Option value",
             "type": "string"
           }
-        }
-        ,"required": [
-          "option_name","option_value"
+        },
+        "required": [
+          "option_name",
+          "option_value"
         ]
       },
       "minItems": 1,
@@ -67,44 +70,43 @@
           "name": {
             "description": "Name of the entity",
             "type": "string",
-            "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
+            "pattern": "^[A-Za-z][a-zA-Z0-9_]*$"
           }
         }
       },
       "minItems": 1,
       "uniqueItems": true
     },
+
     "commands": {
+      "type": "object",
       "description": "Commands",
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/commandDef"
+      "patternProperties": {
+        "^[A-Za-z][a-zA-Z0-9_]*$": {
+          "type": "object",
+          "$ref": "#/definitions/commandDef"
+        }
       },
-      "minItems": 1,
-      "uniqueItems": true
+      "additionalProperties": false,
+      "minProperties": 1
     },
     "recordsDefs": {
       "description": "Record definitons Object",
-      "$ref": "#/$defs/recordsDefs"
+      "$ref": "#/definitions/recordsDefs"
     }
   },
   "additionalProperties": false,
-  "$defs": {
+  "definitions": {
     "commandDef": {
       "type": "object",
       "properties": {
-        "name": {
-          "description": "ID of the command. This will be used in the code generation",
-          "type": "string",
-          "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
-        },
         "title": {
           "description": "Name of the command",
           "type": "string"
         },
         "alias": {
           "type": "string",
-          "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
+          "pattern": "^[A-Za-z][a-zA-Z0-9_]*$"
         },
         "state_type": {
           "description": "The type of the command. Stateless/Stateful",
@@ -118,16 +120,25 @@
         "fields": {
           "type": "object",
           "description": " fields ",
-          "$ref": "#/$defs/fieldsGroupDef"
+          "$ref": "#/definitions/fieldsGroupDef"
         },
-        "resultFields" :{
+        "resultFields": {
           "type": "object",
           "description": " results fields ",
-          "$ref": "#/$defs/fieldsGroupDef"
+          "$ref": "#/definitions/fieldsGroupDef"
         }
       },
       "additionalProperties": false,
-      "required":["name"]
+      "defaultSnippets": [
+        {
+          "label": "New WO Command",
+          "description": "Creates a New WO Command template",
+          "body": {
+            "title": "$1",
+            "fields": {}
+          }
+        }
+      ]
     },
     "payloadDef": {
       "type": "object",
@@ -137,7 +148,6 @@
           "properties": {
             "type": {
               "type": "string",
-              
               "enum": [
                 "string",
                 "boolean",
@@ -153,7 +163,9 @@
               ]
             }
           },
-          "required":["type"]
+          "required": [
+            "type"
+          ]
         },
         {
           "properties": {
@@ -163,13 +175,15 @@
                 "record"
               ]
             },
-                  "recordDefName" : {
-                    "type":"string",
-                    "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
-                  }
-            
+            "recordDefName": {
+              "type": "string",
+              "pattern": "^[A-Za-z][a-zA-Z0-9_]*$"
+            }
           },
-          "required":["type","recordDefName"]
+          "required": [
+            "type",
+            "recordDefName"
+          ]
         },
         {
           "properties": {
@@ -179,12 +193,14 @@
                 "recRef"
               ]
             },
-                  "$ref" : {
-                    "type": "string"
-                  }
-            
+            "$ref": {
+              "type": "string"
+            }
           },
-          "required":["type","recRef"]
+          "required": [
+            "type",
+            "recRef"
+          ]
         },
         {
           "properties": {
@@ -194,21 +210,24 @@
                 "map"
               ]
             },
-                  "valueType" : {
-                    "type":"string",
-                    "enum": [
-                      "string",
-                      "boolean",
-                      "int16",
-                      "int32",
-                      "bytes"
-                    ],
-                    "default":"string"
-                  }
-            
+            "valueType": {
+              "type": "string",
+              "enum": [
+                "string",
+                "boolean",
+                "int16",
+                "int32",
+                "bytes"
+              ],
+              "default": "string"
+            }
           },
-          "required":["type","valueType"]
-        },{
+          "required": [
+            "type",
+            "valueType"
+          ]
+        },
+        {
           "properties": {
             "type": {
               "type": "string",
@@ -219,25 +238,28 @@
             "fields": {
               "type": "object",
               "description": " oneOf fields defs",
-              "$ref": "#/$defs/fieldsGroupDef"
+              "$ref": "#/definitions/fieldsGroupDef"
             }
-            
           },
-          "required":["type","fields"]
+          "required": [
+            "type",
+            "fields"
+          ]
         }
       ]
     },
-
     "fieldDef": {
       "type": "object",
       "allOf": [
         {
           "type": "object",
-          "required":["fnum"],
+          "required": [
+            "fnum"
+          ],
           "properties": {
             "alias": {
               "type": "string",
-              "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
+              "pattern": "^[A-Za-z][a-zA-Z0-9_]*$"
             },
             "fnum": {
               "type": "integer"
@@ -251,16 +273,16 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
-                },
+                "pattern": "^[A-Za-z][a-zA-Z0-9_]*$"
+              },
               "minItems": 1,
               "uniqueItems": true
             }
           }
         },
         {
-          "type":"object",
-          "$ref":"#/$defs/payloadDef"
+          "type": "object",
+          "$ref": "#/definitions/payloadDef"
         }
       ]
     },
@@ -270,7 +292,7 @@
       "patternProperties": {
         "^[A-Za-z][a-zA-Z0-9_]*$": {
           "type": "object",
-          "$ref": "#/$defs/fieldDef"
+          "$ref": "#/definitions/fieldDef"
         }
       },
       "additionalProperties": false,
@@ -282,7 +304,7 @@
         "name": {
           "description": "name of the record definiton",
           "type": "string",
-          "pattern" :"^[A-Za-z][a-zA-Z0-9_]*$"
+          "pattern": "^[A-Za-z][a-zA-Z0-9_]*$"
         },
         "title": {
           "description": "Name of the record definiton",
@@ -291,7 +313,7 @@
         "fields": {
           "type": "object",
           "description": " Fields defintions",
-          "$ref": "#/$defs/fieldsGroupDef"
+          "$ref": "#/definitions/fieldsGroupDef"
         }
       },
       "required": [
@@ -304,7 +326,7 @@
       "patternProperties": {
         "^[A-Za-z][a-zA-Z0-9_]*$": {
           "type": "object",
-          "$ref": "#/$defs/recordDef"
+          "$ref": "#/definitions/recordDef"
         }
       },
       "additionalProperties": false,
