@@ -1,9 +1,12 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schema": "http://json-schema.org/draft-07/schema",
   "$id": "https://pub.workoak.com/schemas/2021-10/wop_service.schema.json#",
   "title": "WO Service Definition Schema",
   "description": "WO Service config schema",
   "type": "object",
+  "required": [
+    "$schema","$id","name","namespace"
+  ],
   "properties": {
     "$schema":{
       "type":"string"
@@ -85,9 +88,6 @@
       "$ref": "#/$defs/recordsDefs"
     }
   },
-  "required": [
-    "name","namespace"
-  ],
   "additionalProperties": false,
   "$defs": {
     "commandDef": {
